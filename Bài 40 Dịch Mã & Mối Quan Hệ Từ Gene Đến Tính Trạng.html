@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Trò Chơi Phiếu Bài Tập KHTN 9 - Bài 40: Dịch Mã & Mối Quan Hệ Từ Gene Đến Tính Trạng 🐾</title>
+    <style>
+        :root {
+            --bg-color: #FFFDF9;
+            --primary-pink: #FF8FA3;
+            --dark-pink: #D93856;
+            --light-pink: #FFF2F4;
+            --border-pink: #FFC2D1;
+            --sec-nb-bg: #E8F5E9;
+            --sec-nb-color: #2E7D32;
+            --sec-th-bg: #E3F2FD;
+            --sec-th-color: #1565C0;
+            --sec-vd-bg: #FFF3E0;
+            --sec-vd-color: #E65100;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 10pt;
+            line-height: 1.45;
+            color: #333333;
+            background-color: #F7F5F0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Container chính */
+        .worksheet-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            padding: 25px 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 3px solid #F0EAE1;
+            position: relative;
+        }
+
+        /* Modal nhập tên ban đầu */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px dashed var(--primary-pink);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-box h2 {
+            color: var(--dark-pink);
+            margin-top: 0;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border-pink);
+            border-radius: 10px;
+            outline: none;
+            font-size: 10pt;
+        }
+
+        /* Đồng hồ bấm giờ */
+        .timer-badge {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            background-color: #FFF;
+            border: 2px solid var(--primary-pink);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--dark-pink);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            font-size: 11pt;
+        }
+
+        .btn {
+            background-color: var(--primary-pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 10pt;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 143, 163, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background-color: var(--dark-pink);
+        }
+
+        .btn-submit {
+            background-color: #4CAF50;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+            width: 100%;
+            padding: 12px;
+            font-size: 11pt;
+            margin-top: 15px;
+        }
+        .btn-submit:hover { background-color: #388E3C; }
+
+        /* Header Card */
+        .header-card {
+            background-color: var(--light-pink);
+            border: 2px dashed var(--primary-pink);
+            border-radius: 15px;
+            padding: 12px 18px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left { width: 55%; }
+        .header-right { width: 43%; }
+
+        .doc-title {
+            font-size: 13pt;
+            font-weight: bold;
+            color: var(--dark-pink);
+            margin: 0 0 3px 0;
+        }
+
+        .student-info-box {
+            background-color: #FFFFFF;
+            border: 1.5px solid var(--border-pink);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 9pt;
+        }
+
+        .student-info-box div { margin-bottom: 3px; }
+
+        /* Tiêu đề phần */
+        .section-header {
+            border-radius: 15px;
+            padding: 6px 14px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 10.5pt;
+        }
+
+        .sec-nhan-biet { background-color: var(--sec-nb-bg); color: var(--sec-nb-color); border: 1.5px solid #A5D6A7; }
+        .sec-thong-hieu { background-color: var(--sec-th-bg); color: var(--sec-th-color); border: 1.5px solid #90CAF9; }
+        .sec-van-dung { background-color: var(--sec-vd-bg); color: var(--sec-vd-color); border: 1.5px solid #FFCC80; }
+
+        /* Thẻ câu hỏi */
+        .question-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .q-title {
+            font-weight: bold;
+            color: #444444;
+            margin-bottom: 8px;
+        }
+
+        .q-title .q-num { color: #FF6B8B; font-size: 10.5pt; }
+
+        .badge {
+            font-size: 7.5pt;
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: white;
+            float: right;
+        }
+        .badge-nb { background-color: #66BB6A; }
+        .badge-th { background-color: #42A5F5; }
+        .badge-vd { background-color: #FFA726; }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 12px;
+            margin-top: 6px;
+        }
+
+        .opt-item {
+            background-color: #FAFAFA;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .opt-item:hover { background-color: #FFF2F4; border-color: var(--primary-pink); }
+        .opt-item.selected { background-color: #FFE0E6; border-color: var(--dark-pink); font-weight: bold; color: var(--dark-pink); }
+
+        .word-bank {
+            background-color: #FFF8E1;
+            border: 1.5px dashed #FFE082;
+            border-radius: 8px;
+            padding: 6px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #F57F17;
+            text-align: center;
+        }
+
+        .fill-box {
+            background-color: #FAFAFA;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            line-height: 1.8;
+        }
+
+        .blank-select {
+            border: none;
+            border-bottom: 2px solid var(--primary-pink);
+            background: transparent;
+            font-weight: bold;
+            color: var(--dark-pink);
+            padding: 2px 4px;
+            outline: none;
+        }
+
+        .tf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+
+        .tf-table th, .tf-table td {
+            padding: 6px;
+            border: 1px solid #E0E0E0;
+        }
+
+        .result-feedback {
+            margin-top: 8px;
+            font-weight: bold;
+            font-size: 9pt;
+            display: none;
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .feedback-correct { color: #2E7D32; background-color: #E8F5E9; }
+        .feedback-wrong { color: #C62828; background-color: #FFEBEE; }
+
+        /* Google Form Container */
+        .gform-container {
+            margin-top: 25px;
+            background: #FFF;
+            border: 2px dashed var(--primary-pink);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ĐỒNG HỒ BẤM GIỜ -->
+    <div class="timer-badge" id="timer">⏱️ Thời gian: 00:00</div>
+
+    <!-- MODAL NHẬP THÔNG TIN BAN ĐẦU -->
+    <div class="modal-overlay" id="start-modal">
+        <div class="modal-box">
+            <h2>🌸 Chào Mừng Em Đến Với Trò Chơi! 🐾</h2>
+            <p style="font-size: 9pt; color: #666;">Nhập thông tin để bắt đầu đồng hồ bấm giờ làm bài nhé!</p>
+            <div class="input-group">
+                <label>Họ và tên học sinh:</label>
+                <input type="text" id="input-name" placeholder="Ví dụ: Nguyễn Văn A">
+            </div>
+            <div class="input-group">
+                <label>Lớp:</label>
+                <input type="text" id="input-class" placeholder="Ví dụ: 9A1">
+            </div>
+            <button class="btn" style="width: 100%; padding: 10px;" onclick="startGame()">🚀 Bắt Đầu Làm Bài</button>
+        </div>
+    </div>
+
+    <!-- KHUNG PHIẾU BÀI TẬP -->
+    <div class="worksheet-container">
+
+        <!-- HEADER BANNER -->
+        <div class="header-card">
+            <div class="header-left">
+                <div class="doc-title">🌸 PHIẾU BÀI TẬP KHTN 9 🐾</div>
+                <div style="font-weight: bold; color: #594A42;">Bài 40: Dịch Mã & Mối Quan Hệ Từ Gene Đến Tính Trạng</div>
+                <div style="font-size: 8pt; color: #777;">Bộ sách: Kết nối tri thức với cuộc sống</div>
+            </div>
+            <div class="header-right">
+                <div class="student-info-box">
+                    <div><b>Họ tên:</b> <span id="display-name" style="color:var(--dark-pink); font-weight:bold;">---</span></div>
+                    <div><b>Lớp:</b> <span id="display-class" style="color:var(--dark-pink); font-weight:bold;">---</span></div>
+                    <div><b>Điểm số:</b> <span id="score-display" style="font-weight:bold; color:var(--dark-pink); font-size: 11pt;">......../10</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MỨC ĐỘ 1: NHẬN BIẾT -->
+        <div class="section-header sec-nhan-biet">🌱 MỨC ĐỘ 1: NHẬN BIẾT</div>
+
+        <!-- CÂU 1 -->
+        <div class="question-card" id="q1">
+            <div class="q-title"><span class="q-num">Câu 1 [Trắc nghiệm]:</span> Quá trình dịch mã (tổng hợp protein) diễn ra ở vị trí nào trong tế bào? <span class="badge badge-nb">Nhận biết</span></div>
+            <div class="options-grid">
+                <div class="opt-item" onclick="selectOption(this, 'q1', 'A')">A. Trong nhân tế bào</div>
+                <div class="opt-item" onclick="selectOption(this, 'q1', 'B')">B. Trong tế bào chất (tại ribosome)</div>
+                <div class="opt-item" onclick="selectOption(this, 'q1', 'C')">C. Trên màng tế bào</div>
+                <div class="opt-item" onclick="selectOption(this, 'q1', 'D')">D. Trong nhân con</div>
+            </div>
+            <div class="result-feedback"></div>
+        </div>
+
+        <!-- CÂU 2 -->
+        <div class="question-card" id="q2">
+            <div class="q-title"><span class="q-num">Câu 2 [Điền từ]:</span> Chọn từ thích hợp điền vào chỗ trống về mã di truyền: <span class="badge badge-nb">Nhận biết</span></div>
+            <div class="word-bank">[ mã bộ ba | codon | anticodon ]</div>
+            <div class="fill-box">
+                Mã di truyền là 
+                <select class="blank-select" id="q2_1">
+                    <option value="">(1) ...</option>
+                    <option value="mã bộ ba">mã bộ ba</option>
+                    <option value="mã bộ đôi">mã bộ đôi</option>
+                </select>, 
+                nghĩa là cứ 3 nucleotide liền kề trên mRNA tạo thành một 
+                <select class="blank-select" id="q2_2">
+                    <option value="">(2) ...</option>
+                    <option value="codon">codon</option>
+                    <option value="anticodon">anticodon</option>
+                </select> 
+                mã hóa cho một amino acid. Bộ ba đối mã trên tRNA được gọi là 
+                <select class="blank-select" id="q2_3">
+                    <option value="">(3) ...</option>
+                    <option value="anticodon">anticodon</option>
+                    <option value="codon">codon</option>
+                </select>.
+            </div>
+            <div class="result-feedback"></div>
+        </div>
+
+        <!-- MỨC ĐỘ 2: THÔNG HIỂU -->
+        <div class="section-header sec-thong-hieu">🐥 MỨC ĐỘ 2: THÔNG HIỂU</div>
+
+        <!-- CÂU 3 -->
+        <div class="question-card" id="q3">
+            <div class="q-title"><span class="q-num">Câu 3 [Trắc nghiệm Đúng / Sai]:</span> Đánh dấu Chọn Đúng/Sai cho các phát biểu dưới đây về sơ đồ mối quan hệ từ Gene đến Tính trạng: <span class="badge badge-th">Thông hiểu</span></div>
+            <table class="tf-table">
+                <tr><th>Phát biểu di truyền học</th><th style="width:50px;">Đúng</th><th style="width:50px;">Sai</th></tr>
+                <tr><td>a) Sơ đồ mối quan hệ chuẩn là: Gene (DNA) ➔ mRNA ➔ Protein ➔ Tính trạng.</td><td style="text-align:center;"><input type="radio" name="q3_a" value="D"></td><td style="text-align:center;"><input type="radio" name="q3_a" value="S"></td></tr>
+                <tr><td>b) Trình tự các nucleotide trên mRNA quy định trình tự các amino acid trong chuỗi polypeptide.</td><td style="text-align:center;"><input type="radio" name="q3_b" value="D"></td><td style="text-align:center;"><input type="radio" name="q3_b" value="S"></td></tr>
+                <tr><td>c) Protein trực tiếp thực hiện phiên mã để tạo ra DNA quy định tính trạng.</td><td style="text-align:center;"><input type="radio" name="q3_c" value="D"></td><td style="text-align:center;"><input type="radio" name="q3_c" value="S"></td></tr>
+            </table>
+            <div class="result-feedback"></div>
+        </div>
+
+        <!-- CÂU 4 -->
+        <div class="question-card" id="q4">
+            <div class="q-title"><span class="q-num">Câu 4 [Kéo thả / Ghép thẻ quy trình]:</span> Ghép giai đoạn/thành phần tương ứng trong cơ chế dịch mã: <span class="badge badge-th">Thông hiểu</span></div>
+            <table class="tf-table">
+                <tr><th>Thành phần / Giai đoạn</th><th>Vai trò trong quá trình Dịch mã</th></tr>
+                <tr>
+                    <td><b>1. Ribosome</b></td>
+                    <td>
+                        <select class="blank-select" id="q4_1">
+                            <option value="">-- Chọn vai trò --</option>
+                            <option value="A">Nơi tiếp xúc và trượt trên mRNA để tổng hợp chuỗi polypeptide</option>
+                            <option value="B">Mang amino acid tương ứng đến khớp bộ ba bổ sung với mRNA</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>2. tRNA</b></td>
+                    <td>
+                        <select class="blank-select" id="q4_2">
+                            <option value="">-- Chọn vai trò --</option>
+                            <option value="A">Nơi tiếp xúc và trượt trên mRNA để tổng hợp chuỗi polypeptide</option>
+                            <option value="B">Mang amino acid tương ứng đến khớp bộ ba bổ sung với mRNA</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <div class="result-feedback"></div>
+        </div>
+
+        <!-- MỨC ĐỘ 3: VẬN DỤNG -->
+        <div class="section-header sec-van-dung">🚀 MỨC ĐỘ 3: VẬN DỤNG</div>
+
+        <!-- CÂU 5 -->
+        <div class="question-card" id="q5">
+            <div class="q-title"><span class="q-num">Câu 5 [Vận dụng Bộ ba mã hóa]:</span> Cho một đoạn mRNA có trình tự các nucleotide là: **`5'... - AUG - GGG - UUU - AAA - ...3'`**. Trình tự các bộ ba đối mã (anticodon) tương ứng trên các phân tử tRNA mang amino acid vào ribosome là: <span class="badge badge-vd">Vận dụng</span></div>
+            <div class="options-grid">
+                <div class="opt-item" onclick="selectOption(this, 'q5', 'A')">A. UAX - XXX - AAA - UUU</div>
+                <div class="opt-item" onclick="selectOption(this, 'q5', 'B')">B. TAX - XXX - AAA - TTT</div>
+                <div class="opt-item" onclick="selectOption(this, 'q5', 'C')">C. AUG - GGG - UUU - AAA</div>
+                <div class="opt-item" onclick="selectOption(this, 'q5', 'D')">D. UAX - GGG - AAA - UUU</div>
+            </div>
+            <div class="result-feedback"></div>
+        </div>
+
+        <!-- NÚT NỘP BÀI -->
+        <button class="btn btn-submit" id="btn-submit-main" onclick="submitWorksheet()">🎮 NỘP BÀI & CHẤM ĐIỂM</button>
+
+        <!-- NƠI NHÚNG GOOGLE FORM NỘP BÀI -->
+        <div class="gform-container">
+            <h3 style="color: var(--dark-pink); margin-top:0;">📋 XÁC NHẬN NỘP KẾT QUẢ VỀ CHO GIÁO VIÊN</h3>
+            <p style="font-size: 8.5pt; color: #666;">Sau khi chấm điểm ở trên, học sinh điền kết quả vào khung Google Form dưới đây:</p>
+            
+            <!-- THẦY/CÔ THAY LINK EMBED GOOGLE FORM VÀO ĐÂY -->
+            <iframe src="https://docs.google.com/spreadsheets/d/1QkUeDNrexajqda-cgNLXzcrNMf9YIQTN3zLmjOVpPAk/edit?gid=0#gid=0/viewform?embedded=true" width="100%" height="500" frameborder="0" marginheight="0" marginwidth="0">Đang tải biểu mẫu...</iframe>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT XỬ LÝ -->
+    <script>
+        let seconds = 0;
+        let timerInterval = null;
+        const userAnswers = {};
+
+        // Bắt đầu trò chơi & đếm thời gian
+        function startGame() {
+            const name = document.getElementById('input-name').value.trim();
+            const className = document.getElementById('input-class').value.trim();
+
+            if (!name || !className) {
+                alert("Vui lòng nhập đầy đủ Họ tên và Lớp để bắt đầu làm bài!");
+                return;
+            }
+
+            document.getElementById('display-name').innerText = name;
+            document.getElementById('display-class').innerText = className;
+            document.getElementById('start-modal').style.display = 'none';
+
+            // Bắt đầu đếm thời gian
+            timerInterval = setInterval(() => {
+                seconds++;
+                let m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                let s = (seconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `⏱️ Thời gian: ${m}:${s}`;
+            }, 1000);
+        }
+
+        // Chọn đáp án trắc nghiệm
+        function selectOption(element, qId, value) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.opt-item').forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            userAnswers[qId] = value;
+        }
+
+        // Nộp bài và chấm điểm
+        function submitWorksheet() {
+            if (!confirm("Em có chắc chắn muốn nộp bài để chấm điểm không?")) return;
+
+            clearInterval(timerInterval);
+            let score = 0;
+            let total = 5; // Tổng 5 câu hỏi
+
+            // Câu 1: B
+            const q1Fb = document.querySelector('#q1 .result-feedback');
+            q1Fb.style.display = 'block';
+            if (userAnswers['q1'] === 'B') {
+                q1Fb.className = 'result-feedback feedback-correct';
+                q1Fb.innerText = '🎉 Đúng! Dịch mã diễn ra ở tế bào chất, tại các ribosome.';
+                score++;
+            } else {
+                q1Fb.className = 'result-feedback feedback-wrong';
+                q1Fb.innerText = '❌ Sai! Đáp án đúng là B (Trong tế bào chất tại ribosome).';
+            }
+
+            // Câu 2: Điền từ
+            const q2_1 = document.getElementById('q2_1').value;
+            const q2_2 = document.getElementById('q2_2').value;
+            const q2_3 = document.getElementById('q2_3').value;
+            const q2Fb = document.querySelector('#q2 .result-feedback');
+            q2Fb.style.display = 'block';
+            if (q2_1 === 'mã bộ ba' && q2_2 === 'codon' && q2_3 === 'anticodon') {
+                q2Fb.className = 'result-feedback feedback-correct';
+                q2Fb.innerText = '🎉 Xuất sắc! Bạn đã điền chính xác các thuật ngữ.';
+                score++;
+            } else {
+                q2Fb.className = 'result-feedback feedback-wrong';
+                q2Fb.innerText = '❌ Chưa đúng! Đáp án đúng: (1) mã bộ ba, (2) codon, (3) anticodon.';
+            }
+
+            // Câu 3: Đúng/Sai
+            const q3_a = document.querySelector('input[name="q3_a"]:checked')?.value;
+            const q3_b = document.querySelector('input[name="q3_b"]:checked')?.value;
+            const q3_c = document.querySelector('input[name="q3_c"]:checked')?.value;
+            const q3Fb = document.querySelector('#q3 .result-feedback');
+            q3Fb.style.display = 'block';
+            if (q3_a === 'D' && q3_b === 'D' && q3_c === 'S') {
+                q3Fb.className = 'result-feedback feedback-correct';
+                q3Fb.innerText = '🎉 Rất giỏi! Đáp án: a-Đúng, b-Đúng, c-Sai (Protein không thực hiện phiên mã).';
+                score++;
+            } else {
+                q3Fb.className = 'result-feedback feedback-wrong';
+                q3Fb.innerText = '❌ Sai! Đáp án chuẩn: a - Đúng, b - Đúng, c - Sai.';
+            }
+
+            // Câu 4: Ghép thẻ vai trò
+            const q4_1 = document.getElementById('q4_1').value;
+            const q4_2 = document.getElementById('q4_2').value;
+            const q4Fb = document.querySelector('#q4 .result-feedback');
+            q4Fb.style.display = 'block';
+            if (q4_1 === 'A' && q4_2 === 'B') {
+                q4Fb.className = 'result-feedback feedback-correct';
+                q4Fb.innerText = '🎉 Chính xác! Bạn đã ghép đúng vai trò của Ribosome và tRNA.';
+                score++;
+            } else {
+                q4Fb.className = 'result-feedback feedback-wrong';
+                q4Fb.innerText = '❌ Sai! Đáp án: 1 ➔ A (Ribosome trượt trên mRNA), 2 ➔ B (tRNA mang amino acid).';
+            }
+
+            // Câu 5: A
+            const q5Fb = document.querySelector('#q5 .result-feedback');
+            q5Fb.style.display = 'block';
+            if (userAnswers['q5'] === 'A') {
+                q5Fb.className = 'result-feedback feedback-correct';
+                q5Fb.innerText = '🎉 Chính xác! Theo NTBS giữa Codon và Anticodon (A-U, G-X): UAX - XXX - AAA - UUU.';
+                score++;
+            } else {
+                q5Fb.className = 'result-feedback feedback-wrong';
+                q5Fb.innerText = '❌ Sai! Chuỗi anticodon đúng là: A. UAX - XXX - AAA - UUU.';
+            }
+
+            // Tính điểm tổng theo thang điểm 10
+            const finalScore = ((score / total) * 10).toFixed(1);
+            document.getElementById('score-display').innerText = `${finalScore} / 10`;
+
+            // Khóa nút nộp bài
+            document.getElementById('btn-submit-main').disabled = true;
+            document.getElementById('btn-submit-main').innerText = '✅ ĐÃ HOÀN THÀNH BÀI LÀM';
+
+            let m = Math.floor(seconds / 60);
+            let s = seconds % 60;
+            alert(`🎉 Chúc mừng ${document.getElementById('display-name').innerText}!\n⏱️ Thời gian làm bài: ${m} phút ${s} giây.\n💯 Điểm số đạt được: ${finalScore}/10.`);
+        }
+    </script>
+</body>
+</html>
